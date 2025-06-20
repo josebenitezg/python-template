@@ -11,7 +11,7 @@ This module provides type-safe configuration management with support for:
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from functools import lru_cache
 
 from pydantic import Field, validator
@@ -130,18 +130,22 @@ class Settings(BaseSettings):
     )
 
     @validator("data_dir", "cache_dir", "temp_dir", pre=True)
-    def ensure_path(cls, v: Any) -> Path:
+    def ensure_path(cls, v: Union[str, Path]) -> Path:
         """Ensure directory paths are Path objects."""
         if isinstance(v, str):
             return Path(v)
-        return v
+        if isinstance(v, Path):
+            return v
+        raise ValueError(f"Expected str or Path, got {type(v)}")
 
     @validator("environment", pre=True)
-    def validate_environment(cls, v: Any) -> Environment:
+    def validate_environment(cls, v: Union[str, Environment]) -> Environment:
         """Validate and normalize environment."""
         if isinstance(v, str):
             return Environment(v.lower())
-        return v
+        if isinstance(v, Environment):
+            return v
+        raise ValueError(f"Expected str or Environment, got {type(v)}")
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize settings with YAML file support."""
@@ -158,7 +162,7 @@ class Settings(BaseSettings):
 
     def _load_yaml_settings(self) -> Dict[str, Any]:
         """Load settings from YAML configuration files."""
-        settings = {}
+        settings: Dict[str, Any] = {}
 
         # Project root directory
         project_root = Path(__file__).parent.parent.parent.parent
