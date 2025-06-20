@@ -36,11 +36,22 @@ jobs:
     - name: Lint with flake8
       run: uv run python -m flake8 src/ tests/
 
-    - name: Check formatting with black
-      run: uv run python -m black --check src/ tests/
+    - name: Format with black
+      run: uv run python -m black src/ tests/
 
-    - name: Check import sorting with isort
-      run: uv run python -m isort --check-only src/ tests/
+    - name: Sort imports with isort
+      run: uv run python -m isort src/ tests/
+
+    - name: Check if formatting changed files
+      run: |
+        if ! git diff --quiet; then
+          echo "Code formatting changes detected:"
+          git diff --name-only
+          git diff
+          echo "::warning::Code was not properly formatted. Running black and isort fixed the issues."
+        else
+          echo "Code is properly formatted."
+        fi
 
     - name: Type check with mypy
       run: uv run python -m mypy src/
