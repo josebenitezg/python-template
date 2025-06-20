@@ -1,0 +1,52 @@
+# Base application settings
+app_name: "Python Template"
+version: "0.1.0"
+environment: "development"
+debug: true
+
+# Logging configuration
+log_level: "INFO"
+log_rotation: true
+log_max_size: "10MB"
+log_backup_count: 5
+
+# Directory settings
+data_dir: "data"
+cache_dir: "cache"
+temp_dir: "tmp"
+
+# Feature flags
+enable_metrics: false
+enable_profiling: false
+enable_caching: true
+
+# Database settings
+database:
+  url: "sqlite:///./app.db"
+  pool_size: 5
+  max_overflow: 10
+  echo: false
+
+# Redis settings (optional)
+redis:
+  url: "redis://localhost:6379/0"
+  max_connections: 20
+  socket_timeout: 5.0
+
+# API settings
+api:
+  host: "localhost"
+  port: 8000
+  debug: true
+  reload: true
+  workers: 1
+  secret_key: "your-secret-key-here-change-in-production"
+  allowed_hosts: ["*"]
+  cors_origins: []
+
+# Custom application settings
+custom_settings:
+  max_file_size: "100MB"
+  batch_size: 1000
+  timeout: 30
+  retry_attempts: 3 

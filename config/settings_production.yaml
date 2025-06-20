@@ -1,0 +1,33 @@
+# Production environment settings
+environment: "production"
+debug: false
+
+# Production logging - less verbose
+log_level: "WARNING"
+
+# Production database (example PostgreSQL)
+# database:
+#   url: "postgresql://user:password@localhost/production_db"
+#   pool_size: 20
+#   max_overflow: 30
+#   echo: false
+
+# API settings for production
+api:
+  debug: false
+  reload: false
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4  # Adjust based on CPU cores
+
+# Feature flags for production
+enable_metrics: true
+enable_profiling: false
+enable_caching: true
+
+# Production-specific custom settings
+custom_settings:
+  batch_size: 5000  # Larger batches for better performance
+  timeout: 10       # Shorter timeout for production
+  retry_attempts: 3
+  mock_external_apis: false 

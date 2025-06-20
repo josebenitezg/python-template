@@ -1,0 +1,30 @@
+# Development environment settings
+environment: "development"
+debug: true
+
+# Development logging
+log_level: "DEBUG"
+
+# Development database (SQLite for simplicity)
+database:
+  url: "sqlite:///./dev.db"
+  echo: true  # Show SQL queries in development
+
+# API settings for development
+api:
+  debug: true
+  reload: true
+  host: "0.0.0.0"
+  port: 8000
+
+# Feature flags for development
+enable_metrics: true
+enable_profiling: true
+enable_caching: false  # Disable caching for development
+
+# Development-specific custom settings
+custom_settings:
+  batch_size: 10  # Smaller batches for easier debugging
+  timeout: 60     # Longer timeout for debugging
+  retry_attempts: 1  # Fewer retries to fail fast
+  mock_external_apis: true 
