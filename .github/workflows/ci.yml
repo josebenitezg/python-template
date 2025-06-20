@@ -28,17 +28,20 @@ jobs:
     - name: Install dependencies
       run: uv sync --dev
 
+    - name: Verify installation
+      run: uv run python -c "import flake8; print('flake8 available'); import black; print('black available')"
+
     - name: Lint with flake8
-      run: uv run flake8 src/ tests/
+      run: uv run python -m flake8 src/ tests/
 
     - name: Check formatting with black
-      run: uv run black --check src/ tests/
+      run: uv run python -m black --check src/ tests/
 
     - name: Check import sorting with isort
-      run: uv run isort --check-only src/ tests/
+      run: uv run python -m isort --check-only src/ tests/
 
     - name: Type check with mypy
-      run: uv run mypy src/
+      run: uv run python -m mypy src/
 
     - name: Test with pytest
       run: uv run pytest --cov=src/python_template --cov-report=xml
