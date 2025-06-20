@@ -134,18 +134,16 @@ class Settings(BaseSettings):
         """Ensure directory paths are Path objects."""
         if isinstance(v, str):
             return Path(v)
-        if isinstance(v, Path):
-            return v
-        raise ValueError(f"Expected str or Path, got {type(v)}")
+        # v must be Path due to Union type annotation
+        return v
 
     @validator("environment", pre=True)
     def validate_environment(cls, v: Union[str, Environment]) -> Environment:
         """Validate and normalize environment."""
         if isinstance(v, str):
             return Environment(v.lower())
-        if isinstance(v, Environment):
-            return v
-        raise ValueError(f"Expected str or Environment, got {type(v)}")
+        # v must be Environment due to Union type annotation
+        return v
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize settings with YAML file support."""
