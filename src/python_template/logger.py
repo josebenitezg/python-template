@@ -47,7 +47,8 @@ def load_logging_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
 
     try:
         with open(config_path, 'r') as f:
-            return yaml.safe_load(f)
+            config = yaml.safe_load(f)
+            return config if config is not None else get_default_logging_config()
     except Exception as e:
         print(f"Warning: Could not load logging config from {config_path}: {e}")
         return get_default_logging_config()
@@ -209,7 +210,7 @@ class LoggerMixin:
         return self._logger
 
 
-def log_function_call(func):
+def log_function_call(func: Any) -> Any:
     """
     Decorator to log function calls with arguments and return values.
 
@@ -218,7 +219,7 @@ def log_function_call(func):
         def my_function(arg1, arg2):
             return "result"
     """
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         logger = get_logger(func.__module__)
         func_name = f"{func.__module__}.{func.__name__}"
 

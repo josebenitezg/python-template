@@ -31,7 +31,7 @@ logger = get_logger(__name__)
 class TemplateApp(LoggerMixin):
     """Main application class with logging capabilities."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the application."""
         self.settings = get_settings()
 

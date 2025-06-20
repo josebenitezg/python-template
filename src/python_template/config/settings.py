@@ -71,7 +71,7 @@ class APISettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="API_")
 
     @validator("secret_key")
-    def validate_secret_key(cls, v):
+    def validate_secret_key(cls, v: str) -> str:
         if v == "your-secret-key-here":
             raise ValueError("Please set a proper secret key")
         if len(v) < 32:
@@ -130,20 +130,20 @@ class Settings(BaseSettings):
     )
 
     @validator("data_dir", "cache_dir", "temp_dir", pre=True)
-    def ensure_path(cls, v):
+    def ensure_path(cls, v: Any) -> Path:
         """Ensure directory paths are Path objects."""
         if isinstance(v, str):
             return Path(v)
         return v
 
     @validator("environment", pre=True)
-    def validate_environment(cls, v):
+    def validate_environment(cls, v: Any) -> Environment:
         """Validate and normalize environment."""
         if isinstance(v, str):
             return Environment(v.lower())
         return v
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize settings with YAML file support."""
         # Load settings from YAML file if it exists
         yaml_settings = self._load_yaml_settings()
