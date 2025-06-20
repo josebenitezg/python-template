@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install UV
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up Python ${{ matrix.python-version }}
+      run: uv python install ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Lint with flake8
+      run: uv run flake8 src/ tests/
+
+    - name: Check formatting with black
+      run: uv run black --check src/ tests/
+
+    - name: Check import sorting with isort
+      run: uv run isort --check-only src/ tests/
+
+    - name: Type check with mypy
+      run: uv run mypy src/
+
+    - name: Test with pytest
+      run: uv run pytest --cov=src/python_template --cov-report=xml
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+  template-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install UV
+      uses: astral-sh/setup-uv@v2
+
+    - name: Test template CLI
+      run: |
+        uv sync
+        uv run python-template --help
+        uv run python-template info
+        uv run python-template config
+        uv run python-template test-logging 
