@@ -28,11 +28,11 @@ _loggers: Dict[str, logging.Logger] = {}
 def load_logging_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
     """
     Load logging configuration from YAML file.
-    
+
     Args:
         config_path: Path to the logging configuration file.
                     If None, uses default config/logging.yaml
-    
+
     Returns:
         Dictionary containing logging configuration
     """
@@ -40,11 +40,11 @@ def load_logging_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
         # Default to config/logging.yaml in project root
         project_root = Path(__file__).parent.parent.parent
         config_path = project_root / "config" / "logging.yaml"
-    
+
     if not config_path.exists():
         # Return default configuration if file doesn't exist
         return get_default_logging_config()
-    
+
     try:
         with open(config_path, 'r') as f:
             return yaml.safe_load(f)
@@ -56,7 +56,7 @@ def load_logging_config(config_path: Optional[Path] = None) -> Dict[str, Any]:
 def get_default_logging_config() -> Dict[str, Any]:
     """
     Get default logging configuration.
-    
+
     Returns:
         Default logging configuration dictionary
     """
@@ -112,7 +112,7 @@ def setup_logging(
 ) -> None:
     """
     Setup logging configuration.
-    
+
     Args:
         config_path: Path to logging configuration file
         log_level: Override log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
@@ -120,25 +120,25 @@ def setup_logging(
     """
     # Load configuration
     config = load_logging_config(config_path)
-    
+
     # Override log level if provided
     if log_level:
         level = getattr(logging, log_level.upper(), logging.INFO)
         config['root']['level'] = level
         if 'python_template' in config['loggers']:
             config['loggers']['python_template']['level'] = level
-    
+
     # Override log file if provided
     if log_file:
         log_file.parent.mkdir(parents=True, exist_ok=True)
         if 'file' in config['handlers']:
             config['handlers']['file']['filename'] = str(log_file)
-    
+
     # Ensure log directory exists
     if 'file' in config['handlers']:
         log_path = Path(config['handlers']['file']['filename'])
         log_path.parent.mkdir(parents=True, exist_ok=True)
-    
+
     # Apply configuration
     try:
         logging.config.dictConfig(config)
@@ -162,11 +162,11 @@ def get_logger(
 ) -> logging.Logger:
     """
     Get a configured logger instance.
-    
+
     Args:
         name: Logger name. If None, uses the calling module's name
         setup_if_needed: Whether to setup logging if not already configured
-    
+
     Returns:
         Configured logger instance
     """
@@ -174,32 +174,32 @@ def get_logger(
         # Get the calling module's name
         frame = sys._getframe(1)
         name = frame.f_globals.get('__name__', 'python_template')
-    
+
     # Check if we already have this logger configured
     if name in _loggers:
         return _loggers[name]
-    
+
     # Setup logging if needed and not already done
     if setup_if_needed and not logging.getLogger().handlers:
         setup_logging()
-    
+
     # Create and cache logger
     logger = logging.getLogger(name)
     _loggers[name] = logger
-    
+
     return logger
 
 
 class LoggerMixin:
     """
     Mixin class to add logging capability to any class.
-    
+
     Usage:
         class MyClass(LoggerMixin):
             def some_method(self):
                 self.logger.info("This is a log message")
     """
-    
+
     @property
     def logger(self) -> logging.Logger:
         """Get logger for this class."""
@@ -212,7 +212,7 @@ class LoggerMixin:
 def log_function_call(func):
     """
     Decorator to log function calls with arguments and return values.
-    
+
     Usage:
         @log_function_call
         def my_function(arg1, arg2):
@@ -221,14 +221,14 @@ def log_function_call(func):
     def wrapper(*args, **kwargs):
         logger = get_logger(func.__module__)
         func_name = f"{func.__module__}.{func.__name__}"
-        
+
         # Log function entry
         args_str = ', '.join([repr(arg) for arg in args])
         kwargs_str = ', '.join([f"{k}={repr(v)}" for k, v in kwargs.items()])
         all_args = ', '.join(filter(None, [args_str, kwargs_str]))
-        
+
         logger.debug(f"Calling {func_name}({all_args})")
-        
+
         try:
             result = func(*args, **kwargs)
             logger.debug(f"{func_name} returned: {repr(result)}")
@@ -236,9 +236,9 @@ def log_function_call(func):
         except Exception as e:
             logger.error(f"{func_name} raised {type(e).__name__}: {e}")
             raise
-    
+
     return wrapper
 
 
 # Initialize logging on import
-setup_logging() 
+setup_logging()

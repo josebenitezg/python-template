@@ -15,4 +15,4 @@ __email__ = "your.email@example.com"
 from .logger import get_logger
 from .config.settings import get_settings
 
-__all__ = ["get_logger", "get_settings", "__version__"] 
+__all__ = ["get_logger", "get_settings", "__version__"]
